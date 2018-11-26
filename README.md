@@ -1,6 +1,6 @@
 # PS_GigHub
 First plural sight tutorial I completed, did so after having finished my senior capstone and was not completely satisfied
-with what had done and whanted more exposure with ASP.NET using the MVC design pattern. 
+with what I had done and wanted more exposure with ASP.NET using the MVC design pattern. 
 
 Initially did this using VSTS but am uploading a version that runs through git bash,
 as I ran it, aside from being simple the globe icon on the
