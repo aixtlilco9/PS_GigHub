@@ -1,0 +1,82 @@
+﻿@model GigHub.Core.ViewModels.GigsViewModel
+
+@{
+    ViewBag.Title = "Home Page";
+}
+<h1>@Model.Heading</h1>
+@using (Html.BeginForm("Search", "Gigs"))
+{
+    <div class="form-group">
+        <div id="searchGigs" class="input-group">
+            @Html.TextBoxFor(m => m.SearchTerm, new { @class = "form-control" })
+            <span class="input-group-addon">
+                <i class="glyphicon glyphicon-search"></i>
+            </span>
+        </div>
+    </div>
+    //<input type="submit" value="Search"/>
+}
+   @* this ul is where we render our gigs *@
+    <ul class="gigs voffset4" id="gigs">
+    @foreach (var gig in Model.UpcomingGigs)
+    {//mosh: beautiful and precise designs with css.zencoding
+        <li>
+            @*using web essentials i did div.date +tab to autogenerate*@
+            @*(div.date>div.month+div.day)+(div.details>span.artist+span.genre) + tab made below*@
+            <div class="date">
+                <div class="month">
+                    @gig.DateTime.ToString("MMM")
+                </div>
+                <div class="day">
+                    @gig.DateTime.ToString("d ")
+                </div>
+            </div>
+            <div class="details">
+                <span class="artist">
+                    <a href="@Url.Action("Details", "Gigs", new {id = gig.Id})">
+                        @gig.Artist.Name
+                    </a>
+
+                    @if (gig.IsCanceled)
+                    {
+                        <span class="label label-warning"> Canceled</span>
+                    }
+
+                    @if (Model.ShowActions)
+                    {
+                        @*<button class="btn btn-link btn-sm js-toggle-follow" data-user-id="@gig.ArtistId">
+                            Follow
+                        </button>*@
+                    }
+                </span>
+                <span class="genre">
+                    @gig.Genre.Name
+                </span>
+                @*pull right should align all the gonig buttons but its not*@
+                  @if (Model.ShowActions && !gig.IsCanceled)
+                  {
+                      <button 
+                          data-gig-id="@gig.Id" 
+                          class="btn 
+                          @(Model.Attendances.Contains(gig.Id) ? "btn-info" : "btn-default") 
+                          btn-sm pull-right js-toggle-attendance">
+                          Going
+                      </button>
+                  }
+            </div>
+        </li>
+        }
+</ul>
+@section scripts
+{
+    <script>
+        $(document).ready(function() {
+            //initGit(); not using this because i refactored the apps.js file modularized javascript code so i use the below line
+            GigsController.init("#gigs");
+
+            //new js below for following
+            GigDetailsController.init();
+            //
+        });
+    </script>
+}

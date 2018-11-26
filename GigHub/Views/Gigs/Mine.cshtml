@@ -1,0 +1,117 @@
+﻿@model IEnumerable<GigHub.Core.Models.Gig>
+@{
+    ViewBag.Title = "Mine";
+}
+
+<h2>My Upcoming Gigs</h2>
+
+<ul class="gigs voffset4">
+    @foreach (var gig in Model)
+    {//mosh: beautiful and precise designs with css.zencoding
+        <li>
+            @*using web essentials i did div.date +tab to autogenerate*@
+            @*(div.date>div.month+div.day)+(div.details>span.artist+span.genre) + tab made below*@
+            <div class="date">
+                <div class="month">
+                    @gig.DateTime.ToString("MMM")
+                </div>
+                <div class="day">
+                    @gig.DateTime.ToString("d ")
+                </div>
+            </div>
+            <div class="details">
+                <span class="artist">
+                    @gig.Venue
+                </span>
+                <span class="genre">
+                    @gig.Genre.Name
+                </span>
+                <div class="actions">
+                    @* name of action, controller, anonymous object which includes id for gig *@
+                    <a href="@Url.Action("Edit", "Gigs", new {id = gig.Id})">
+                        Edit
+                    </a> 
+                    <a href="#" class="js-cancel-gig" data-gig-id="@gig.Id">
+                    Cancel
+                    </a>
+                </div>
+                @*pull right should align all the gonig buttons but its not*@
+            </div>
+        </li>
+    }
+</ul>
+@section scripts
+{
+    <script>
+        $(document).ready(function(){
+            $(".js-cancel-gig").click(function (e) {
+                var link = $(e.target);//this return a cancel link the ones that the user clicks
+
+                // down below lies new cancel dialog box
+
+                bootbox.confirm({
+                    title: "Confirm",
+                    message: "Are you sure you want to cancel this gig??",
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: 'No',
+                            className: 'btn-default'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result === null) {
+                            // Prompt dismissed
+                        }
+                        else if (result == false) {
+                            bootbox.hideAll();
+                        }
+                        else {
+                            // result has a value
+                            $.ajax({
+                                url: "/api/gigs/" + link.attr("data-gig-id"),
+                                method: "DELETE"
+                            })
+                                .done(function () {
+                                    link.parents("li").fadeOut(function () {
+                                        //this represents the link li above
+                                        $(this).remove();
+                                    });
+                                })
+                                .fail(function () {
+                                    alert("something failed");
+                                });
+
+                        }
+
+                       
+                    }
+                });
+
+                //above is new canel dialog box
+/////////////////////////////////////////////////////
+                //bootbox.confirm("Are you sure you want to cancel this gig??", function (result) {
+                //    //console.log('This was logged in the callback: ' + result);
+                //    $.ajax({
+                //        url: "/api/gigs/" + link.attr("data-gig-id"),
+                //        method: "DELETE"
+                //    })
+                //        .done(function () {
+                //            link.parents("li").fadeOut(function () {
+                //                //this represents the link li above
+                //                $(this).remove();
+                //            });
+                //        })
+                //        .fail(function () {
+                //            alert("something failed");
+                //        });
+                //});
+
+///////////////////////////////////////////////////////
+            });
+        });
+    </script>
+}

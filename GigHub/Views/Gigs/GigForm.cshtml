@@ -1,0 +1,49 @@
+﻿@model GigHub.Core.ViewModels.GigFormViewModel
+@{
+    ViewBag.Title = Model.Heading;
+}
+
+<h2>@Model.Heading</h2>
+@using (Html.BeginForm(Model.Action, "Gigs"))
+{
+    <p class="alert alert-info">All fields are <strong>required.</strong></p>
+    //below prevents csrf
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(m => m.Id)
+    <div class="form-group">
+        @Html.LabelFor(m => m.Venue)
+        @Html.TextBoxFor(m => m.Venue, new { @class = "form-control", autofocus = "autofocus" })
+        @Html.ValidationMessageFor(m => m.Venue)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Date)
+        @Html.TextBoxFor(m => m.Date, new { @class = "form-control", placeholder = "eg 1 Jan 2017" })
+        @Html.ValidationMessageFor(m => m.Date)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Time)
+        @Html.TextBoxFor(m => m.Time, new { @class = "form-control", placeholder = "eg 20:00" })
+        @Html.ValidationMessageFor(m => m.Time)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Genre)
+
+        @* another why to do whats below*http://odetocode.com/blogs/scott/archive/2013/03/11/dropdownlistfor-with-asp-net-mvc.aspx*@
+        @*initially had an override in Site.css which set padding to 20 something and that caused the genre field to
+        now visually display the value although it did have one not sure why play with that later perhaps*@
+
+        @Html.DropDownListFor(m => m.Genre, new SelectList(Model.Genres, "Id", "Name"), string.Empty, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Genre)
+    </div>
+
+    <button type="submit" value="Save" class="btn btn-primary btn-lg">save</button>
+}
+@* below is used for client side validation this is how to enable it *@
+@section Scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+}
